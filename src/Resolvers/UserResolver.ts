@@ -41,20 +41,10 @@ class UserToken {
 
 @Resolver(() => User)
 class UserResolver {
-  @Query(() => [User])
-  async users(): Promise<User[]> {
-    return await User.find();
-  }
 
   @Query(() => User, { nullable: true })
-  user(@Arg("id") id: string): Promise<User | undefined> {
-    return User.findOne(id);
-  }
-
-  @Authorized("OWNER", "ADMIN")
-  @Query(() => String)
-  userId(@Arg("userId") id: string): string {
-    return id;
+  userProfile(@Arg("userId") userId: string): Promise<User | undefined> {
+    return User.findOne(userId);
   }
 
   @Mutation(() => User)

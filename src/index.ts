@@ -10,6 +10,7 @@ import "reflect-metadata";
 import { TKAuthChecker } from "./Middlewares/TKAuthChecker";
 import User from "./Types/User";
 import UserResolver from "./Resolvers/UserResolver";
+import AuthResolver from "./Resolvers/AuthResolver";
 import SetTokens from "./Middlewares/SetTokens";
 
 const main = async () => {
@@ -39,7 +40,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [UserResolver, AuthResolver],
       authChecker: TKAuthChecker
     }),
     context: ({req, res}) => ({

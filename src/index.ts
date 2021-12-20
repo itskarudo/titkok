@@ -42,8 +42,9 @@ const main = async () => {
       resolvers: [UserResolver],
       authChecker: TKAuthChecker
     }),
-    context: ({req}) => ({
+    context: ({req, res}) => ({
       user: req.user,
+      res,
       redis
     })
   });

@@ -31,14 +31,6 @@ class UserPasswordInput {
   password: string;
 }
 
-@ObjectType()
-class UserToken {
-  @Field()
-  access_token: string;
-  @Field()
-  refresh_token: string;
-}
-
 @Resolver(() => User)
 class UserResolver {
 
@@ -78,12 +70,12 @@ class UserResolver {
     }
   }
 
-  @Mutation(() => UserToken)
+  @Mutation(() => String)
   async login(
     @Arg("username") username: string,
     @Arg("password") password: string,
-    @Ctx() {redis}: ContextType
-  ): Promise<UserToken> {
+    @Ctx() {redis, res}: ContextType
+  ): Promise<String> {
     const user = await User.findOne({ username });
     if (!user) throw new Error("USERNAME_OR_PASSWORD_INVALID");
 
@@ -101,7 +93,15 @@ class UserResolver {
     const access_token = generateAccessToken({userId: user.id, admin: user.admin});
     const refresh_token = generateRefreshToken({userId: user.id, token_version: token_version});
 
-    return { access_token, refresh_token };
+        res.cookie('refresh_token',
+                   refresh_token,
+                   {
+                      maxAge: 1000 * 60 * 60 * 24 * 31,
+                      httpOnly: true,
+                   }
+        );
+
+    return access_token;
   }
 }
 

@@ -94,6 +94,30 @@ class UserResolver {
       throw new Error("INTERNAL_SERVER_ERROR");
     }
   }
+
+  @Mutation(() => Boolean)
+  @Authorized()
+  async deleteUser(
+    @Arg("password") password: string,
+    @Ctx() ctx: ContextType
+  ): Promise<boolean> {
+    let user = await ctx.conn
+      .getRepository(User)
+      .createQueryBuilder()
+      .select("user.password")
+      .from(User, "user")
+      .where("user.id = :id", { id: ctx.req.user.userId })
+      .getOne();
+
+    if (!user) throw new Error("INTERNAL_SERVER_ERROR");
+
+    if (!(await argon2.verify(user.password, password)))
+      throw new Error("PASSWORD_INCORRECT");
+
+    User.delete(ctx.req.user.userId);
+
+    return true;
+  }
 }
 
 export default UserResolver;

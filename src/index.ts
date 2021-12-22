@@ -49,7 +49,7 @@ const main = async () => {
       redis,
       conn,
     }),
-import {ApolloServerPluginLandingPageGraphQLPlayground} from "apollo-server-core"    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
+    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
   await apolloServer.start();

@@ -1,10 +1,16 @@
-import {ObjectType, Field} from "type-graphql";
-import {BaseEntity, Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn} from "typeorm";
+import { ObjectType, Field } from "type-graphql";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @ObjectType()
 @Entity()
 class User extends BaseEntity {
-
   @Field()
   @PrimaryColumn()
   id: string;
@@ -24,16 +30,16 @@ class User extends BaseEntity {
   @Column()
   password: string;
 
-  @Field({nullable: true})
-  @Column({nullable: true})
+  @Field({ nullable: true })
+  @Column({ nullable: true })
   date_of_birth: Date;
 
-  @Field({nullable: true})
-  @Column({nullable: true})
+  @Field({ nullable: true })
+  @Column({ nullable: true })
   gender: string;
 
-  @Field({nullable: true})
-  @Column({nullable: true})
+  @Field({ nullable: true })
+  @Column({ nullable: true })
   sexuality: string;
 
   @Field()
@@ -43,7 +49,6 @@ class User extends BaseEntity {
   @Field()
   @UpdateDateColumn()
   updatedAt: Date;
-
 }
 
 export default User;

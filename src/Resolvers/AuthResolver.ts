@@ -1,18 +1,11 @@
-import {
-  Field,
-  Resolver,
-  Arg,
-  Mutation,
-  InputType,
-  Ctx
-} from "type-graphql";
+import { Field, Resolver, Arg, Mutation, InputType, Ctx } from "type-graphql";
 import argon2 from "argon2";
 import { v4 as uuidv4 } from "uuid";
 import { IsEmail, Length } from "class-validator";
 import User from "../Types/User";
-import {generateAccessToken, generateRefreshToken} from "../Utils/tokens";
+import { generateAccessToken, generateRefreshToken } from "../Utils/tokens";
 import ContextType from "../Types/ContextType";
-import {__prod__} from "../config";
+import { __prod__ } from "../config";
 
 @InputType()
 class UserPasswordInput {
@@ -31,9 +24,11 @@ class UserPasswordInput {
 
 @Resolver(() => User)
 class AuthResolver {
-
   @Mutation(() => User)
-  async register(@Arg("options") options: UserPasswordInput, @Ctx() {redis}: ContextType): Promise<User> {
+  async register(
+    @Arg("options") options: UserPasswordInput,
+    @Ctx() { redis }: ContextType
+  ): Promise<User> {
     const hashedPassword = await argon2.hash(options.password);
 
     try {
@@ -65,7 +60,7 @@ class AuthResolver {
   async login(
     @Arg("username") username: string,
     @Arg("password") password: string,
-    @Ctx() {redis, res}: ContextType
+    @Ctx() { redis, res }: ContextType
   ): Promise<String> {
     const user = await User.findOne({ username });
     if (!user) throw new Error("USERNAME_OR_PASSWORD_INVALID");
@@ -75,27 +70,26 @@ class AuthResolver {
     if (!passwords_match) throw new Error("USERNAME_OR_PASSWORD_INVALID");
 
     // everything cool, do jwt magic stuff
-    
-    const token_version = await redis.get(user.id) as string;
+
+    const token_version = (await redis.get(user.id)) as string;
 
     // TODO: check if there is no token in redis, this shouldn't happen
     //        if we're this fair in the login process, but better safe then sorry
 
-    const access_token = generateAccessToken({userId: user.id});
-    const refresh_token = generateRefreshToken({userId: user.id, token_version: token_version});
+    const access_token = generateAccessToken({ userId: user.id });
+    const refresh_token = generateRefreshToken({
+      userId: user.id,
+      token_version: token_version,
+    });
 
-        res.cookie('refresh_token',
-                   refresh_token,
-                   {
-                      maxAge: 1000 * 60 * 60 * 24 * 31,
-                      httpOnly: __prod__,
-                      secure: __prod__
-                   }
-        );
+    res.cookie("refresh_token", refresh_token, {
+      maxAge: 1000 * 60 * 60 * 24 * 31,
+      httpOnly: __prod__,
+      secure: __prod__,
+    });
 
     return access_token;
   }
 }
 
 export default AuthResolver;
-

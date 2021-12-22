@@ -1,8 +1,8 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import {ApolloServer} from "apollo-server-express";
+import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import {createConnection, ConnectionOptions} from "typeorm";
+import { createConnection, ConnectionOptions } from "typeorm";
 import Redis from "ioredis";
 import path from "path";
 import "reflect-metadata";
@@ -10,14 +10,11 @@ import { TKAuthChecker } from "./Middlewares/TKAuthChecker";
 import User from "./Types/User";
 import UserResolver from "./Resolvers/UserResolver";
 import AuthResolver from "./Resolvers/AuthResolver";
-import SetTokens from "./Middlewares/SetTokens";
-import {ApolloServerPluginLandingPageGraphQLPlayground} from "apollo-server-core"
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import RequestToken from "./request_token";
-import {__prod__, REDIS_URL, PORT} from "./config"
+import { __prod__, REDIS_URL, PORT } from "./config";
 
 const main = async () => {
-
-
   const options: ConnectionOptions = {
     type: "postgres",
     username: "karudo",
@@ -26,7 +23,7 @@ const main = async () => {
     entities: [User],
     migrations: [path.join(__dirname, "./migrations/*")],
     synchronize: !__prod__,
-    logging: !__prod__
+    logging: !__prod__,
   };
 
   const conn = await createConnection(options);
@@ -38,34 +35,29 @@ const main = async () => {
 
   app.use(cookieParser());
 
-  app.get('/request_token', RequestToken(redis));
+  app.get("/request_token", RequestToken(redis));
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [UserResolver, AuthResolver],
       authChecker: TKAuthChecker,
-      dateScalarMode: "timestamp"
+      dateScalarMode: "timestamp",
     }),
-    context: ({req, res}) => ({
+    context: ({ req, res }) => ({
       req,
       res,
       redis,
-      conn
+      conn,
     }),
-    plugins: [
-      ApolloServerPluginLandingPageGraphQLPlayground(),
-    ]
+import {ApolloServerPluginLandingPageGraphQLPlayground} from "apollo-server-core"    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
-
   await apolloServer.start();
-  apolloServer.applyMiddleware({app, path: "/graphql"});
-
+  apolloServer.applyMiddleware({ app, path: "/graphql" });
 
   app.listen(PORT, () => {
     console.log(`>Server running on port ${PORT}`);
   });
-
-}
+};
 
 main();

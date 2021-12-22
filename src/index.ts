@@ -4,7 +4,6 @@ import {ApolloServer} from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import {createConnection, ConnectionOptions} from "typeorm";
 import Redis from "ioredis";
-import "dotenv/config";
 import path from "path";
 import "reflect-metadata";
 import { TKAuthChecker } from "./Middlewares/TKAuthChecker";
@@ -12,10 +11,11 @@ import User from "./Types/User";
 import UserResolver from "./Resolvers/UserResolver";
 import AuthResolver from "./Resolvers/AuthResolver";
 import SetTokens from "./Middlewares/SetTokens";
+import {ApolloServerPluginLandingPageGraphQLPlayground} from "apollo-server-core"
+import {REDIS_URL, PORT} from "./config"
 
 const main = async () => {
 
-  const {PORT, REDIS_URL} = process.env;
 
   const options: ConnectionOptions = {
     type: "postgres",
@@ -41,13 +41,17 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [UserResolver, AuthResolver],
-      authChecker: TKAuthChecker
+      authChecker: TKAuthChecker,
+      dateScalarMode: "timestamp"
     }),
     context: ({req, res}) => ({
       user: req.user,
       res,
       redis
-    })
+    }),
+    plugins: [
+      ApolloServerPluginLandingPageGraphQLPlayground(),
+    ]
   });
 
 

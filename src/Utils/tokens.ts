@@ -1,11 +1,10 @@
 import jwt from "jsonwebtoken";
+import {ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET} from "../config";
 
-const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env;
 
 export interface Payload {
   userId: string,
   token_version?: string,
-  admin?: boolean
 };
 
 export const generateAccessToken = (payload: Payload): string => {

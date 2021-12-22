@@ -4,6 +4,7 @@ import {Request, Response, NextFunction} from "express";
 import {JwtPayload} from "jsonwebtoken";
 import User from "../Types/User";
 import {Payload, generateAccessToken, generateRefreshToken} from "../Utils/tokens";
+import {__prod__, ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET} from "../config";
 
 const SetTokens = (redis: Redis) => {
 
@@ -19,7 +20,6 @@ const SetTokens = (redis: Redis) => {
 
     if (!token) return next(); 
 
-    const {ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET} = process.env;
     try
     {
       const user = jwt.verify(token, ACCESS_TOKEN_SECRET!) as JwtPayload;
@@ -41,7 +41,7 @@ const SetTokens = (redis: Redis) => {
 
         if (token_version != actual_token_version_lol) return next();
 
-        let payload: Payload = {userId: user.id, admin: user.admin};
+        let payload: Payload = {userId: user.id};
 
         res.set("x-access-token", generateAccessToken(payload));
 
@@ -49,7 +49,7 @@ const SetTokens = (redis: Redis) => {
                    generateRefreshToken({userId, token_version}),
                    {
                       maxAge: 1000 * 60 * 60 * 24 * 31,
-                      httpOnly: true,
+                      httpOnly: __prod__,
                    }
         );
 

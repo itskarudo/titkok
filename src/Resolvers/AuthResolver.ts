@@ -12,6 +12,7 @@ import { IsEmail, Length } from "class-validator";
 import User from "../Types/User";
 import {generateAccessToken, generateRefreshToken} from "../Utils/tokens";
 import ContextType from "../Types/ContextType";
+import {__prod__} from "../config";
 
 @InputType()
 class UserPasswordInput {
@@ -42,7 +43,6 @@ class AuthResolver {
         username: options.username,
         email: options.email,
         password: hashedPassword,
-        admin: false,
         token_version: 1
       }).save();
 
@@ -82,14 +82,14 @@ class AuthResolver {
     // TODO: check if there is no token in redis, this shouldn't happen
     //        if we're this fair in the login process, but better safe then sorry
 
-    const access_token = generateAccessToken({userId: user.id, admin: user.admin});
+    const access_token = generateAccessToken({userId: user.id});
     const refresh_token = generateRefreshToken({userId: user.id, token_version: token_version});
 
         res.cookie('refresh_token',
                    refresh_token,
                    {
                       maxAge: 1000 * 60 * 60 * 24 * 31,
-                      httpOnly: true,
+                      httpOnly: __prod__,
                    }
         );
 

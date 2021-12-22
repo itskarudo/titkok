@@ -5,8 +5,7 @@ interface ContextType {
   res: Response,
   redis: Redis,
   user: {
-    userId: string,
-    admin: boolean
+    userId: string
   }
 };
 

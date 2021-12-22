@@ -20,12 +20,20 @@ class User extends BaseEntity {
   @Column()
   password: string;
 
-  @Field()
-  @Column()
-  admin: boolean;
-
   @Column()
   token_version: number;
+
+  @Field({nullable: true})
+  @Column({nullable: true})
+  date_of_birth: Date;
+
+  @Field({nullable: true})
+  @Column({nullable: true})
+  gender: string;
+
+  @Field({nullable: true})
+  @Column({nullable: true})
+  sexuality: string;
 
   @Field()
   @CreateDateColumn()

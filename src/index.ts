@@ -12,7 +12,7 @@ import UserResolver from "./Resolvers/UserResolver";
 import AuthResolver from "./Resolvers/AuthResolver";
 import SetTokens from "./Middlewares/SetTokens";
 import {ApolloServerPluginLandingPageGraphQLPlayground} from "apollo-server-core"
-import {REDIS_URL, PORT} from "./config"
+import {__prod__, REDIS_URL, PORT} from "./config"
 
 const main = async () => {
 
@@ -25,6 +25,7 @@ const main = async () => {
     entities: [User],
     migrations: [path.join(__dirname, "./migrations/*")],
     synchronize: true,
+    logging: __prod__
   };
 
   const conn = await createConnection(options);
@@ -47,7 +48,8 @@ const main = async () => {
     context: ({req, res}) => ({
       user: req.user,
       res,
-      redis
+      redis,
+      conn
     }),
     plugins: [
       ApolloServerPluginLandingPageGraphQLPlayground(),

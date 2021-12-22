@@ -43,7 +43,6 @@ class AuthResolver {
         username: options.username,
         email: options.email,
         password: hashedPassword,
-        token_version: 1
       }).save();
 
       await redis.set(uuid, 1);

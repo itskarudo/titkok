@@ -17,11 +17,12 @@ class User extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column()
-  password: string;
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  bio: string;
 
   @Column()
-  token_version: number;
+  password: string;
 
   @Field({nullable: true})
   @Column({nullable: true})

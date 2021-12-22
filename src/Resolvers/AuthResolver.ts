@@ -89,6 +89,7 @@ class AuthResolver {
                    {
                       maxAge: 1000 * 60 * 60 * 24 * 31,
                       httpOnly: __prod__,
+                      secure: __prod__
                    }
         );
 

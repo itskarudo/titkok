@@ -12,6 +12,7 @@ import UserResolver from "./Resolvers/UserResolver";
 import AuthResolver from "./Resolvers/AuthResolver";
 import SetTokens from "./Middlewares/SetTokens";
 import {ApolloServerPluginLandingPageGraphQLPlayground} from "apollo-server-core"
+import RequestToken from "./request_token";
 import {__prod__, REDIS_URL, PORT} from "./config"
 
 const main = async () => {
@@ -24,8 +25,8 @@ const main = async () => {
     database: "titkok",
     entities: [User],
     migrations: [path.join(__dirname, "./migrations/*")],
-    synchronize: true,
-    logging: __prod__
+    synchronize: !__prod__,
+    logging: !__prod__
   };
 
   const conn = await createConnection(options);
@@ -37,7 +38,7 @@ const main = async () => {
 
   app.use(cookieParser());
 
-  app.use('/graphql', SetTokens(redis));
+  app.get('/request_token', RequestToken(redis));
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
@@ -46,7 +47,7 @@ const main = async () => {
       dateScalarMode: "timestamp"
     }),
     context: ({req, res}) => ({
-      user: req.user,
+      req,
       res,
       redis,
       conn

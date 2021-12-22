@@ -1,14 +1,12 @@
 import {Redis} from "ioredis";
-import {Response} from "express";
+import {Request, Response} from "express";
 import {Connection} from "typeorm";
 
 interface ContextType {
+  req: Request & { user: { userId: string } },
   res: Response,
   redis: Redis,
   conn: Connection,
-  user: {
-    userId: string
-  }
 };
 
 export default ContextType;

@@ -73,7 +73,7 @@ class UserResolver {
         .createQueryBuilder()
         .select("user.password")
         .from(User, "user")
-        .where("user.id = :id", { id: ctx.user.userId })
+        .where("user.id = :id", { id: ctx.req.user.userId })
         .getOne();
 
       if (!user) throw new Error("INTERNAL_SERVER_ERROR");
@@ -88,7 +88,7 @@ class UserResolver {
       delete options.old_password;
       delete options.password_confirmation;
 
-      await User.update(ctx.user.userId, options);
+      await User.update(ctx.req.user.userId, options);
       return true;
     } catch (e) {
       throw new Error("INTERNAL_SERVER_ERROR");

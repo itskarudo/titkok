@@ -114,7 +114,8 @@ class UserResolver {
     if (!(await argon2.verify(user.password, password)))
       throw new Error("PASSWORD_INCORRECT");
 
-    User.delete(ctx.req.user.userId);
+    await User.delete(ctx.req.user.userId);
+    await ctx.redis.pipeline().del(ctx.req.user.userId).exec();
 
     return true;
   }

@@ -12,13 +12,19 @@ import UserResolver from "./Resolvers/UserResolver";
 import AuthResolver from "./Resolvers/AuthResolver";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import RequestToken from "./request_token";
-import { __prod__, REDIS_URL, PORT } from "./config";
+import {
+  __prod__,
+  REDIS_URL,
+  PORT,
+  POSTGRES_USERNAME,
+  POSTGRES_PASSWORD,
+} from "./config";
 
 const main = async () => {
   const options: ConnectionOptions = {
     type: "postgres",
-    username: "karudo",
-    password: "Wtfilpcsm?!25",
+    username: POSTGRES_USERNAME,
+    password: POSTGRES_PASSWORD,
     database: "titkok",
     entities: [User],
     migrations: [path.join(__dirname, "./migrations/*")],

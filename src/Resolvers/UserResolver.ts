@@ -11,7 +11,7 @@ import {
 } from "type-graphql";
 import { Length, MaxLength, IsEmail, IsDate } from "class-validator";
 import argon2 from "argon2";
-import User from "../Types/User";
+import User, { UserAttraction, UserGender } from "../Types/User";
 
 @InputType()
 class EditProfileInput {
@@ -43,11 +43,11 @@ class EditProfileInput {
   @Field({ nullable: true })
   date_of_birth?: Date;
 
-  @Field({ nullable: true })
-  sexuality?: string;
+  @Field(() => UserAttraction, { nullable: true })
+  attraction?: UserAttraction;
 
-  @Field({ nullable: true })
-  gender?: string;
+  @Field(() => UserGender, { nullable: true })
+  gender?: UserGender;
 }
 
 @Resolver(() => User)

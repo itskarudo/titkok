@@ -1,4 +1,4 @@
-import { ObjectType, Field } from "type-graphql";
+import { ObjectType, Field, registerEnumType } from "type-graphql";
 import {
   BaseEntity,
   Column,
@@ -7,6 +7,25 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
+
+export enum UserGender {
+  MALE = "male",
+  FEMALE = "female",
+}
+
+export enum UserAttraction {
+  MEN = "men",
+  WOMEN = "women",
+  BOTH = "both",
+}
+
+registerEnumType(UserGender, {
+  name: "UserGender",
+});
+
+registerEnumType(UserAttraction, {
+  name: "UserAttraction",
+});
 
 @ObjectType()
 @Entity()
@@ -34,13 +53,25 @@ class User extends BaseEntity {
   @Column({ nullable: true })
   date_of_birth: Date;
 
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  gender: string;
+  @Field(() => UserGender, {
+    nullable: true,
+  })
+  @Column({
+    type: "enum",
+    enum: UserGender,
+    nullable: true,
+  })
+  gender: UserGender;
 
-  @Field({ nullable: true })
-  @Column({ nullable: true })
-  sexuality: string;
+  @Field(() => UserAttraction, {
+    nullable: true,
+  })
+  @Column({
+    type: "enum",
+    enum: UserAttraction,
+    nullable: true,
+  })
+  attraction: UserAttraction;
 
   @Field()
   @CreateDateColumn()

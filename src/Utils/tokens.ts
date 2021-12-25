@@ -7,7 +7,7 @@ export interface Payload {
 }
 
 export const generateAccessToken = (payload: Payload): string => {
-  return jwt.sign(payload, ACCESS_TOKEN_SECRET!, { expiresIn: "1m" });
+  return jwt.sign(payload, ACCESS_TOKEN_SECRET!, { expiresIn: "1h" });
 };
 
 export const generateRefreshToken = (payload: Payload): string => {

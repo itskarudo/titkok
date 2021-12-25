@@ -9,9 +9,14 @@ import {
   Field,
   Authorized,
 } from "type-graphql";
+import { GraphQLUpload } from "graphql-upload";
 import { Length, MaxLength, IsEmail, IsDate } from "class-validator";
 import argon2 from "argon2";
 import User, { UserAttraction, UserGender } from "../Types/User";
+import UploadType from "../Types/UploadType";
+import { createWriteStream } from "fs";
+import path from "path/posix";
+import { v4 as uuidv4 } from "uuid";
 
 @InputType()
 class EditProfileInput {
@@ -48,6 +53,9 @@ class EditProfileInput {
 
   @Field(() => UserGender, { nullable: true })
   gender?: UserGender;
+
+  @Field(() => GraphQLUpload, { nullable: true })
+  image?: Promise<UploadType>;
 }
 
 @Resolver(() => User)
@@ -84,11 +92,41 @@ class UserResolver {
       options.password = await argon2.hash(options.password);
     }
 
+    let imgname: string | null = null;
+
+    if (options.image) {
+      let img = await options.image;
+      imgname = `${uuidv4()}_${img.filename}`;
+
+      let stream = img.createReadStream();
+
+      // TODO:  FIND A WAY TO FUCKING VALIDATE THE PICTURE TYPE
+      //        I DON'T WANT SONS OF BITCHS UPLOADING REVERSE_SHELL.JPEG
+      //        TO MY GOD DAMN SERVER.
+
+      stream
+        .pipe(
+          createWriteStream(
+            path.join(__dirname, `../../static/images/${imgname}`)
+          )
+        )
+        .on("error", () => {
+          throw new Error("IMAGE_UPLOAD_FAILED");
+        });
+    }
+
     try {
       delete options.old_password;
       delete options.password_confirmation;
+      delete options.image;
 
-      await User.update(ctx.req.user.userId, options);
+      if (imgname)
+        await User.update(ctx.req.user.userId, {
+          ...options,
+          picture_url: imgname,
+        });
+      else await User.update(ctx.req.user.userId, options);
+
       return true;
     } catch (e) {
       throw new Error("INTERNAL_SERVER_ERROR");

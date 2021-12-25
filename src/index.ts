@@ -12,6 +12,7 @@ import UserResolver from "./Resolvers/UserResolver";
 import AuthResolver from "./Resolvers/AuthResolver";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import RequestToken from "./request_token";
+import { graphqlUploadExpress } from "graphql-upload";
 import {
   __prod__,
   REDIS_URL,
@@ -38,6 +39,7 @@ const main = async () => {
   const redis = new Redis(REDIS_URL);
 
   const app = express();
+  app.use(graphqlUploadExpress());
 
   app.use(cookieParser());
 

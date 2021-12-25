@@ -73,6 +73,10 @@ class User extends BaseEntity {
   })
   attraction: UserAttraction;
 
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  picture_url: string;
+
   @Field()
   @CreateDateColumn()
   createdAt: Date;

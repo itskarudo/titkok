@@ -8,8 +8,10 @@ import path from "path";
 import "reflect-metadata";
 import { TKAuthChecker } from "./Middlewares/TKAuthChecker";
 import User from "./Types/User";
+import Video from "./Types/Video";
 import UserResolver from "./Resolvers/UserResolver";
 import AuthResolver from "./Resolvers/AuthResolver";
+import VideoResolver from "./Resolvers/VideoResolver";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import RequestToken from "./request_token";
 import { graphqlUploadExpress } from "graphql-upload";
@@ -27,7 +29,7 @@ const main = async () => {
     username: POSTGRES_USERNAME,
     password: POSTGRES_PASSWORD,
     database: "titkok",
-    entities: [User],
+    entities: [User, Video],
     migrations: [path.join(__dirname, "./migrations/*")],
     synchronize: !__prod__,
     logging: !__prod__,
@@ -47,7 +49,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, AuthResolver],
+      resolvers: [UserResolver, AuthResolver, VideoResolver],
       authChecker: TKAuthChecker,
       dateScalarMode: "timestamp",
     }),

@@ -6,7 +6,10 @@ import {
   Entity,
   PrimaryColumn,
   UpdateDateColumn,
+  OneToMany,
+  JoinColumn,
 } from "typeorm";
+import Video from "./Video";
 
 export enum UserGender {
   MALE = "male",
@@ -76,6 +79,11 @@ class User extends BaseEntity {
   @Field({ nullable: true })
   @Column({ nullable: true })
   picture_url: string;
+
+  @Field(() => [Video])
+  @OneToMany(() => Video, (video) => video.user)
+  @JoinColumn()
+  videos: Video[];
 
   @Field()
   @CreateDateColumn()

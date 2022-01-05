@@ -76,9 +76,7 @@ class UserResolver {
       if (options.password !== options.password_confirmation)
         throw new Error("PASSWORDS_DO_NOT_MATCH");
 
-      let user = await ctx.conn
-        .getRepository(User)
-        .createQueryBuilder()
+      let user = await User.createQueryBuilder("user")
         .select("user.password")
         .from(User, "user")
         .where("user.id = :id", { id: ctx.req.user.userId })
